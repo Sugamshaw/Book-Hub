@@ -3,7 +3,6 @@ package com.example.bookhub
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.FrameLayout
-import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -20,6 +19,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var frame_layout: FrameLayout
     private lateinit var design_navigation_view: NavigationView
 
+    var previous_menuitem: MenuItem? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,28 +33,55 @@ class MainActivity : AppCompatActivity() {
         design_navigation_view = findViewById(R.id.design_navigation_view)
 
         setUpToolBar()
+
+
         val actionBarDrawerToggle =
             ActionBarDrawerToggle(this, drawer_layout, R.string.open_drawer, R.string.close_drawer)
         drawer_layout.addDrawerListener(actionBarDrawerToggle)
         actionBarDrawerToggle.syncState()
 
+
+        openDashboard()
         design_navigation_view.setNavigationItemSelectedListener {
 
+            if(previous_menuitem!=null){
+                previous_menuitem?.isChecked=false
+            }
+            it.isCheckable = true
+            it.isChecked = true
+            previous_menuitem = it
             when (it.itemId) {
                 R.id.dashboard -> {
-                    Toast.makeText(this, "Dashboard", Toast.LENGTH_SHORT).show()
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.frame_layout, DashboardFragment())
+                        .commit()
+                    supportActionBar?.title = "Dashboard"
+
+                    drawer_layout.closeDrawers()
                 }
 
                 R.id.favourites -> {
-                    Toast.makeText(this, "favourites", Toast.LENGTH_SHORT).show()
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.frame_layout, FavouritesFragment())
+                        .commit()
+                    supportActionBar?.title = "Favourites"
+                    drawer_layout.closeDrawers()
                 }
 
                 R.id.profile -> {
-                    Toast.makeText(this, "profile", Toast.LENGTH_SHORT).show()
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.frame_layout, ProfileFragment())
+                        .commit()
+                    supportActionBar?.title = "Profile"
+                    drawer_layout.closeDrawers()
                 }
 
                 R.id.about_app -> {
-                    Toast.makeText(this, "about_app", Toast.LENGTH_SHORT).show()
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.frame_layout, AboutFragment())
+                        .commit()
+                    supportActionBar?.title = "About App"
+                    drawer_layout.closeDrawers()
                 }
 
 
@@ -63,6 +91,15 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+    }
+
+    private fun openDashboard() {
+        val fragment = DashboardFragment()
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.frame_layout, fragment)
+        transaction.commit()
+
+        supportActionBar?.title = "Dashboard"
     }
 
     private fun setUpToolBar() {
@@ -78,6 +115,20 @@ class MainActivity : AppCompatActivity() {
             drawer_layout.openDrawer(GravityCompat.START)
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onBackPressed() {
+        val fragment = supportFragmentManager.findFragmentById(R.id.frame_layout)
+
+        when (fragment) {
+            !is DashboardFragment -> {
+                openDashboard()
+            }
+
+            else -> {
+                super.onBackPressed()
+            }
+        }
     }
 
 

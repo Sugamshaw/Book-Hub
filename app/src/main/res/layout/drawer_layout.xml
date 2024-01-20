@@ -7,9 +7,13 @@
     >
 
     <TextView
+        android:background="@color/design_default_color_primary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/bookhub"
+        android:textColor="@color/white"
         android:textSize="20sp"
+        android:layout_marginTop="20sp"
+        android:padding="20sp"
         />
 </LinearLayout>
